@@ -2896,13 +2896,13 @@ namespace XXY_VisitorMJAsst
             };
             //MessageBox.Show("strSActualNo:" + strSActualNo);
             DataTable dt = SQLHelper4XXYXT.ExecuteDataTable(sql_getStudentInfo, System.Data.CommandType.Text, pms_getStudentInfo);
-            MessageBox.Show("dt.Rows.Count:" + dt.Rows.Count);
+            //MessageBox.Show("dt.Rows.Count:" + dt.Rows.Count);
             if (dt.Rows.Count > 0)
             {
                 string phone = dt.Rows[0]["SurrogateMPhone"].ToString();
                 className = dt.Rows[0]["SDDetailName"].ToString();
 
-                MessageBox.Show("phone:" + phone);
+                //MessageBox.Show("phone:" + phone);
 
 
                 // textBox1.Text = phone;
@@ -2987,7 +2987,7 @@ namespace XXY_VisitorMJAsst
             object obj_deleteFromId = SQLHelper4XXYXT.ExecuteNonQuery(sql_deleteForm_id, System.Data.CommandType.Text, pms_deleteForm_id);
             if (Convert.ToInt32(obj_deleteFromId) == 1)
             {
-                MessageBox.Show("删除formId成功");
+                //MessageBox.Show("删除formId成功");
                 //textBox1.Text = "删除formId成功";
             }
             string strSQL_Temp2 = "insert into "+strT_MJRecordAccessInf+"(MSNo,MName,MachineId ,LogIndex,CardNo ,DoorId ,DName ,ReadHeadId ,ReadHeadNote ,RecordDT,RecordDate,";
