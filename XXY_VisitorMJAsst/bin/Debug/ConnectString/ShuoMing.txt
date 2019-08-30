@@ -1,0 +1,12 @@
+/**************关于ConnectString.ini文件各行内容介绍如下**************/
+     
+一、MesCatPort：指短信猫的通信端口。
+      
+二、OrderServerIP：指预约端服务器的IP地址。
+      
+三、OrderLoginName：指预约端服务器的SQL数据库登录名。
+      
+四、OrderLoginPwd：指预约端服务器的SQL数据库登录密码。
+      
+五、OrderDBName：指预约端服务器的数据库及其表名。
+      

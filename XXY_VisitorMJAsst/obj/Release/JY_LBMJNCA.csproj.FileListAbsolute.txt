@@ -1,0 +1,14 @@
+C:\Users\Administrator\Desktop\JY_LBMJNCA\JY_LBMJNCA\bin\Release\JY_LBMJNCA.exe.config
+C:\Users\Administrator\Desktop\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Desktop\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.Properties.Resources.resources
+C:\Users\Administrator\Desktop\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.csproj.GenerateResource.Cache
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\bin\Release\JY_LBMJNCA.exe.config
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.csprojResolveAssemblyReference.cache
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.Properties.Resources.resources
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.csproj.GenerateResource.Cache
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.LoginFrm_Configuration.resources
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.LoginFrm.resources
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\bin\Release\JY_LBMJNCA.exe
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\bin\Release\JY_LBMJNCA.pdb
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.exe
+X:\1.软件\9.2017版访客软件\蓝本门禁版\JY_LBMJNCA\JY_LBMJNCA\obj\Release\JY_LBMJNCA.pdb

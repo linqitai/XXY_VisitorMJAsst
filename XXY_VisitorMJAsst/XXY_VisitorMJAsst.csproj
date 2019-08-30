@@ -1,0 +1,326 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D54E659D-DA7C-4AE1-8B4C-051D246486EC}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XXY_VisitorMJAsst</RootNamespace>
+    <AssemblyName>云访客门禁网络通信助手</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>发布\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>XXYZN.ico.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AxInterop.WMPLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x86\Release\AxInterop.WMPLib.dll</HintPath>
+    </Reference>
+    <Reference Include="FlexCell, Version=4.4.1.0, Culture=neutral, PublicKeyToken=6f86587eb70ee309, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x86\Release\FlexCell.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.MediaPlayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>bin\x86\Release\Interop.MediaPlayer.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.WMPLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>bin\x86\Release\Interop.WMPLib.dll</HintPath>
+    </Reference>
+    <Reference Include="IrisSkin2, Version=2006.3.22.45, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x86\Release\IrisSkin2.dll</HintPath>
+    </Reference>
+    <Reference Include="NoxPlus.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f9da04db0b150b70, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x86\Release\NoxPlus.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XPExplorerBar, Version=3.3.0.0, Culture=neutral, PublicKeyToken=26272737b5f33015, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\XPExplorerBar.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="3SystemMaintenance\D_OperatorLogFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="3SystemMaintenance\D_OperatorLogFrm.Designer.cs">
+      <DependentUpon>D_OperatorLogFrm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="3SystemMaintenance\D_OperatorLogFrm_LogSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="3SystemMaintenance\D_OperatorLogFrm_LogSearch.Designer.cs">
+      <DependentUpon>D_OperatorLogFrm_LogSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AccessMan.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="ClsIme.cs" />
+    <Compile Include="D_RemoterControlFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="D_RemoterControlFrm.Designer.cs">
+      <DependentUpon>D_RemoterControlFrm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="D_RemoterControlFrm_AwhileOpenDoor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="D_RemoterControlFrm_AwhileOpenDoor.Designer.cs">
+      <DependentUpon>D_RemoterControlFrm_AwhileOpenDoor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="D_RemoterControlFrm_SysSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="D_RemoterControlFrm_SysSetting.Designer.cs">
+      <DependentUpon>D_RemoterControlFrm_SysSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GetHardwareInf.cs" />
+    <Compile Include="HttpHelper.cs" />
+    <Compile Include="SQLHelper4XXYXT.cs" />
+    <Compile Include="TcpBaseClass.cs" />
+    <Compile Include="TcpClientClass.cs" />
+    <Compile Include="TcpipMCClass.cs" />
+    <Compile Include="TcpPackge.cs" />
+    <Compile Include="TcpServerClass.cs" />
+    <Compile Include="Update.cs" />
+    <Compile Include="LBDoorControlDLL.cs" />
+    <Compile Include="LoginFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginFrm.Designer.cs">
+      <DependentUpon>LoginFrm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoginFrm_Configuration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginFrm_Configuration.Designer.cs">
+      <DependentUpon>LoginFrm_Configuration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoginFrm_Help.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginFrm_Help.Designer.cs">
+      <DependentUpon>LoginFrm_Help.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NoxPlusAPI.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service.cs" />
+    <Compile Include="SQLHelper.cs" />
+    <Compile Include="SQLHelper_Remote.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="WeChat.cs" />
+    <Compile Include="XXCLOUDDLL.cs" />
+    <EmbeddedResource Include="3SystemMaintenance\D_OperatorLogFrm.resx">
+      <DependentUpon>D_OperatorLogFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="3SystemMaintenance\D_OperatorLogFrm_LogSearch.resx">
+      <DependentUpon>D_OperatorLogFrm_LogSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="D_RemoterControlFrm.resx">
+      <DependentUpon>D_RemoterControlFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="D_RemoterControlFrm_AwhileOpenDoor.resx">
+      <DependentUpon>D_RemoterControlFrm_AwhileOpenDoor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="D_RemoterControlFrm_SysSetting.resx">
+      <DependentUpon>D_RemoterControlFrm_SysSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginFrm.resx">
+      <DependentUpon>LoginFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginFrm_Configuration.resx">
+      <DependentUpon>LoginFrm_Configuration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\a.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\b.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\StartCollect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\StartMonitoring.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\StopControl.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exit.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exit1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Door.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LogoICO.ico" />
+    <None Include="Resources\PNG操作日志.png" />
+    <None Include="Resources\PNG操作日志1.png" />
+    <None Include="Resources\PNG操作日志2.png" />
+    <None Include="Resources\PNG后台运行.png" />
+    <None Include="Resources\PNG后台运行1.png" />
+    <None Include="Resources\PNG后台运行2.png" />
+    <None Include="Resources\PNG卡号读取.png" />
+    <None Include="Resources\PNG卡号读取1.png" />
+    <None Include="Resources\PNG卡号读取2.png" />
+    <None Include="Resources\PNG全部取消.png" />
+    <None Include="Resources\PNG全部取消1.png" />
+    <None Include="Resources\PNG全部取消2.png" />
+    <None Include="Resources\PNG全部选中.png" />
+    <None Include="Resources\PNG全部选中1.png" />
+    <None Include="Resources\PNG全部选中2.png" />
+    <None Include="Resources\PNG系统设置.png" />
+    <None Include="Resources\PNG系统设置1.png" />
+    <None Include="Resources\PNG系统设置2.png" />
+    <None Include="Resources\PNG远程关门.png" />
+    <None Include="Resources\PNG远程关门1.png" />
+    <None Include="Resources\PNG远程关门2.png" />
+    <None Include="Resources\PNG远程开门.png" />
+    <None Include="Resources\PNG远程开门1.png" />
+    <None Include="Resources\PNG远程开门2.png" />
+    <Content Include="XXYZN.ico.ico" />
+    <None Include="Resources\OpenDoor.png" />
+    <None Include="Resources\DoorOff.png" />
+    <None Include="Resources\AIM.ico" />
+    <None Include="Resources\85.png" />
+    <None Include="Resources\81.png" />
+    <None Include="Resources\35.png" />
+    <None Include="Resources\33.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
