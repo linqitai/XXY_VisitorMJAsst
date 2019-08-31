@@ -162,6 +162,9 @@ namespace XXY_VisitorMJAsst
         private string strSDDetailName = "";
         private string strApiTypeName = "";
         private string strVisitorType = "";
+        private string strGONo = "";
+        private string strSIdNo = "";
+        private string strSSex = "";
 
         string strBarCode = "";
         int iBarCode = 0;
@@ -883,6 +886,7 @@ namespace XXY_VisitorMJAsst
                                 sqlList.AppendFormat(strSQL_Insert);
                                 if (SQLHelper.ExecuteNonQueryTran(sqlList.ToString().TrimEnd(';').Split(';')) == false)
                                 {
+
                                 }
                             }
 
@@ -905,6 +909,7 @@ namespace XXY_VisitorMJAsst
                             sqlList.AppendFormat(strSQL_Insert);
                             if (SQLHelper.ExecuteNonQueryTran(sqlList.ToString().TrimEnd(';').Split(';')) == false)
                             {
+
                             }
                         }
 
@@ -2082,6 +2087,9 @@ namespace XXY_VisitorMJAsst
             strSDDetailName = "";
             strApiTypeName = "";
             strVisitorType = "";
+            strGONo = "";
+            strSIdNo = "";
+            strSSex = "";
             #region//事件（如刷卡开门，远程开门）
             if (this.grid_GORecord.Rows > 1000)
             {
@@ -2191,7 +2199,7 @@ namespace XXY_VisitorMJAsst
 
             //strCardNoTemp = "10643";
             //一、内部学生卡开门
-            strSQL_OpenDoor = "select top 1 Id ,SName,SCardNo,EnterCount,LeaveCount,AId ,SNo,SActualNo,SDDetailName  from XXCLOUD.dbo.T_ClassAndStudentInf where SCardNo ='" + strCardNoTemp + "'  ";//and MJEnabled ='" + "1" + "' ";
+            strSQL_OpenDoor = "select top 1 Id ,SName,SCardNo,EnterCount,LeaveCount,AId ,SNo,SActualNo,SDDetailName,SIdNo,SSex    from XXCLOUD.dbo.T_ClassAndStudentInf where SCardNo ='" + strCardNoTemp + "'  ";//and MJEnabled ='" + "1" + "' ";
             strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
             strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
             strSQL_OpenDoor += strLoginFrmSelectFlag;
@@ -2204,8 +2212,12 @@ namespace XXY_VisitorMJAsst
                 strSNo = dtOpenDoor.Rows[0]["SNo"].ToString().Trim();
                 strSActualNo = dtOpenDoor.Rows[0]["SActualNo"].ToString().Trim();
                 strSDDetailName = dtOpenDoor.Rows[0]["SDDetailName"].ToString().Trim();
+                strSIdNo = dtOpenDoor.Rows[0]["SIdNo"].ToString().Trim();
+                strSSex = dtOpenDoor.Rows[0]["SSex"].ToString().Trim();
                 strApiTypeName = "";
                 strVisitorType = "学生";
+
+
                 #region//一、内部学生卡开门
                 bool blAccessPermissions = false;//1.判断是否具有通行权限  false:没有权限  true:合法权限
                 if (dtOpenDoor.Rows[0]["AId"].ToString().Trim() == "0" || dtOpenDoor.Rows[0]["AId"].ToString().Trim() == null)//全部区域
@@ -2331,29 +2343,28 @@ namespace XXY_VisitorMJAsst
             }
             else
             {
-                #region //二、访客临时卡或二维码开门
-                // this.tabControl1.SelectedIndex = 3;
-                //备注：来访记录表里只有二维码，而支撑人员首次和延期都没二维码，也就是BarCodeNo一直为空。
-                strRecordType = "4";
-                dtOpenDoor.Rows.Clear();
-                strSQL_OpenDoor = "select  top 1 Id ,VNo,VActualNo,VName,VCardNo,EnterCount,LeaveCount,AId,RegWay,ApiType,VUnitName,ApiTypeName,VisitorType,RPRoomNo  from " + strT_VisitorAccessInf + " where ( VIdWLNoToDec ='" + strCardNoTemp + "'  ) and ( LeaDDetailName ='" + "" + "' or  LeaDDetailName is null )";
-                strSQL_OpenDoor += " and VCardStartValidDT <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                strSQL_OpenDoor += " and VCardEndValidDT >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";//and (VerificationResult='" + "4" + "' or VerificationResult is null or VerificationResult='" + "" + "' or VerificationResult='" + "与服务器失连" + "'  or VerificationResult='" + "Unable to connect to the remote server" + "') "; ;
+                //一、内部员工卡开门
+                strSQL_OpenDoor = "select top 1 Id ,SName,SCardNo,EnterCount,LeaveCount,AId ,SNo,SActualNo,SDDetailName,SIdNo,SSex  from XXCLOUD.dbo.T_StaffInf where SCardNo ='" + strCardNoTemp + "'  ";//and MJEnabled ='" + "1" + "' ";
+                strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
                 strSQL_OpenDoor += strLoginFrmSelectFlag;
                 strSQL_OpenDoor += " order by Id desc";
                 dtOpenDoor = SQLHelper.DTQuery(strSQL_OpenDoor);
                 if (dtOpenDoor.Rows.Count > 0)
                 {
-                    strFloor = dtOpenDoor.Rows[0]["RPRoomNo"].ToString().Trim();
-                    strSName = dtOpenDoor.Rows[0]["VName"].ToString().Trim();
-                    strSNo = dtOpenDoor.Rows[0]["VNo"].ToString().Trim();
-                    strSActualNo = dtOpenDoor.Rows[0]["VActualNo"].ToString().Trim();
-                    strSDDetailName = dtOpenDoor.Rows[0]["VUnitName"].ToString().Trim();
-                    strApiTypeName = dtOpenDoor.Rows[0]["ApiTypeName"].ToString().Trim();
-                    strVisitorType = dtOpenDoor.Rows[0]["VisitorType"].ToString().Trim();
-                    #region//2.1.判断是访客二维码
-                    bool blAccessPermissions = false;//通行权限  false:没有权限  true:合法权限
-                    if (dtOpenDoor.Rows[0]["AId"].ToString().Trim() == "0")//全部区域
+                    strFloor = "";
+                    strSName = dtOpenDoor.Rows[0]["SName"].ToString().Trim();
+                    strSNo = dtOpenDoor.Rows[0]["SNo"].ToString().Trim();
+                    strSActualNo = dtOpenDoor.Rows[0]["SActualNo"].ToString().Trim();
+                    strSDDetailName = dtOpenDoor.Rows[0]["SDDetailName"].ToString().Trim();
+                    strSIdNo = dtOpenDoor.Rows[0]["SIdNo"].ToString().Trim();
+                    strSSex = dtOpenDoor.Rows[0]["SSex"].ToString().Trim();
+
+                    strApiTypeName = "";
+                    strVisitorType = "内部员工";
+                    #region//一、内部内部员工卡开门
+                    bool blAccessPermissions = false;//1.判断是否具有通行权限  false:没有权限  true:合法权限
+                    if (dtOpenDoor.Rows[0]["AId"].ToString().Trim() == "0" || dtOpenDoor.Rows[0]["AId"].ToString().Trim() == null)//全部区域
                     {
                         blAccessPermissions = true;
                     }
@@ -2361,13 +2372,14 @@ namespace XXY_VisitorMJAsst
                     {
                         for (int k = 0; k < DoorTable.Rows.Count; k++)
                         {
-                            if (DoorTable.Rows[k]["ADId"].ToString().Trim() == dtOpenDoor.Rows[0]["AId"].ToString().Trim() && DoorTable.Rows[k]["MSNo"].ToString().Trim() == strMName)
+                            if (DoorTable.Rows[k]["ADId"].ToString().Trim() == dtOpenDoor.Rows[0]["AId"].ToString().Trim() && DoorTable.Rows[k]["MSNo"].ToString().Trim() == Event.ID.ToString())
                             {
                                 blAccessPermissions = true;
                                 break;
                             }
                         }
                     }
+                    //2.如果具有通行权限，则判断哪个控制器的进出
                     if (blAccessPermissions == true)
                     {
                         //可能存在多条卡号是一样的且开门权限都是合法但进出次数不一样的情况。所以访客软件里保存来访记录前得根据卡号更改发卡表里这些合法记录为非法卡。
@@ -2386,50 +2398,42 @@ namespace XXY_VisitorMJAsst
                             {
                                 iEnterCount = 0;
                             }
-                            if (iEnterCount < Convert.ToInt32(LoginFrm.strAllowedEnterCount.ToString()))
+
+
+                            Ack = true;
+                            OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
+                            relay = Event.Reader;
+                            time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
+                            card = strCardNoTemp;// "23456"; 
+                            if (card == "")
                             {
-                                Ack = true;
-                                OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
-                                relay = Event.Reader;
-                                time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
-                                card = strCardNoTemp;// "23456"; 
-                                if (card == "")
-                                {
-                                    card = "0";
-                                }
-                                voice = dtOpenDoor.Rows[0]["VName"].ToString().Trim() + "进门";  // "测试语音";
-                                name = dtOpenDoor.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
-                                note = "进门";// "进门出门"; 
-                                etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
-                                ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
-                                iEnterCount++;
-
-
-                                //记录最后一次入闸时间,进入次数加1
-                      
-                                    strSQL_OpenDoor = "update " + strT_VisitorAccessInf + " set EnterDoorDT='" + System.DateTime.Now.ToString() + "' ,EnterCount='" + iEnterCount.ToString() + "'  ";
-                                    strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
-                                    strSQL_OpenDoor += strLoginFrmSelectFlag;
-                                    SQLHelper.ExecuteSql(strSQL_OpenDoor);
-                         
-
-                                strRecordType = "1";//进出记录
-                                dGORecord_Count++;
-                                SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
-                                setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "Visitor_Card");
+                                card = "0";
                             }
-                            else
-                            {
-                                dSpecialRecord_Count++;
-                                SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
-                                setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "0");
-                            }
+                            voice = dtOpenDoor.Rows[0]["SName"].ToString().Trim() + "进门";  // "测试语音";
+                            name = dtOpenDoor.Rows[0]["SName"].ToString().Trim(); // "姓名"; 
+                            note = "进门";// "进门出门"; 
+                            etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
+                            ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+                            iEnterCount++;
+                            //记录最后一次入闸时间,进入次数加1
+
+                            strSQL_OpenDoor = "update XXCLOUD.dbo.T_StaffInf  set EnterDoorDT='" + System.DateTime.Now.ToString() + "' ,EnterCount='" + iEnterCount.ToString() + "'  ";
+                            strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
+                            strSQL_OpenDoor += strLoginFrmSelectFlag;
+                            SQLHelper.ExecuteSql(strSQL_OpenDoor);
+
+                            strRecordType = "1";//进出记录
+                            dGORecord_Count++;
+                            SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
+                            setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, System.DateTime.Now.ToString(), Event.EventType.ToString(), "Staff");
+
+
                             #endregion
                         }
                         else if (Event.Reader == 1)//出门
                         {
                             strReadHeadNote = "出门";
-                            #region
+                            #region//出门
                             int iLeaveCount = 0;
                             try
                             {
@@ -2439,25 +2443,184 @@ namespace XXY_VisitorMJAsst
                             {
                                 iLeaveCount = 0;
                             }
-                            if (iLeaveCount < Convert.ToInt32(LoginFrm.strAllowedLeaveCount.ToString()))
+
+                            #region
+                            Ack = true;
+                            OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
+                            relay = Event.Reader;
+                            time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
+                            card = strCardNoTemp;// "23456"; 
+                            if (card == "")
                             {
-                                #region
-                                Ack = true;
-                                OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
-                                relay = Event.Reader;
-                                time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
-                                card = strCardNoTemp;// "23456"; 
-                                if (card == "")
+                                card = "0";
+                            }
+                            voice = dtOpenDoor.Rows[0]["SName"].ToString().Trim() + "出门";  // "测试语音";
+                            name = dtOpenDoor.Rows[0]["SName"].ToString().Trim(); // "姓名"; 
+                            note = "出门";// "进门出门"; 
+                            etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
+                            ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+                            iLeaveCount++;
+
+                            strSQL_OpenDoor = "update XXCLOUD.dbo.T_StaffInf  set LeaveDoorDT='" + System.DateTime.Now.ToString() + "' ,LeaveCount='" + iLeaveCount.ToString() + "'  ";
+                            strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
+                            strSQL_OpenDoor += strLoginFrmSelectFlag;
+                            SQLHelper.ExecuteSql(strSQL_OpenDoor);
+
+                            strRecordType = "1";//进出记录
+                            dGORecord_Count++;
+                            SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
+                            setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, System.DateTime.Now.ToString(), Event.EventType.ToString(), "Staff");
+
+
+                            #endregion
+
+                            #endregion
+                        }
+                    }
+                    else
+                    {
+                        dSpecialRecord_Count++;
+                        SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
+                        setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, strDTNow, Event.EventType.ToString(), "0");
+                    }
+                    #endregion
+                }
+                else
+                {
+
+                    #region //二、访客临时卡或二维码开门
+                    // this.tabControl1.SelectedIndex = 3;
+                    //备注：来访记录表里只有二维码，而支撑人员首次和延期都没二维码，也就是BarCodeNo一直为空。
+                    strRecordType = "4";
+                    dtOpenDoor.Rows.Clear();
+                    strSQL_OpenDoor = "select  top 1 Id ,GONO,VNo,VIdNo,VActualNo,VName,VSex ,VCardNo,EnterCount,LeaveCount,AId,RegWay,ApiType,VUnitName,ApiTypeName,VisitorType,RPRoomNo  from " + strT_VisitorAccessInf + " where ( VIdWLNoToDec ='" + strCardNoTemp + "'  ) and ( LeaDDetailName ='" + "" + "' or  LeaDDetailName is null )";
+                    strSQL_OpenDoor += " and VCardStartValidDT <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                    strSQL_OpenDoor += " and VCardEndValidDT >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";//and (VerificationResult='" + "4" + "' or VerificationResult is null or VerificationResult='" + "" + "' or VerificationResult='" + "与服务器失连" + "'  or VerificationResult='" + "Unable to connect to the remote server" + "') "; ;
+                    strSQL_OpenDoor += strLoginFrmSelectFlag;
+                    strSQL_OpenDoor += " order by Id desc";
+                    dtOpenDoor = SQLHelper.DTQuery(strSQL_OpenDoor);
+                    if (dtOpenDoor.Rows.Count > 0)
+                    {
+                        strFloor = dtOpenDoor.Rows[0]["RPRoomNo"].ToString().Trim();
+                        strSName = dtOpenDoor.Rows[0]["VName"].ToString().Trim();
+                        strSNo = dtOpenDoor.Rows[0]["VNo"].ToString().Trim();
+                        //  strSActualNo = dtOpenDoor.Rows[0]["VActualNo"].ToString().Trim();
+                        strSDDetailName = dtOpenDoor.Rows[0]["VUnitName"].ToString().Trim();
+                        strApiTypeName = dtOpenDoor.Rows[0]["ApiTypeName"].ToString().Trim();
+                        strVisitorType = dtOpenDoor.Rows[0]["VisitorType"].ToString().Trim();
+                        strSIdNo = dtOpenDoor.Rows[0]["VIdNo"].ToString().Trim();
+                        strGONo = dtOpenDoor.Rows[0]["GONO"].ToString().Trim();
+                        strSSex = dtOpenDoor.Rows[0]["VSex"].ToString().Trim();
+
+                        strSActualNo = dtOpenDoor.Rows[0]["VIdNo"].ToString().Trim();//只能这样处理，不然同一人通行会出现多个豆腐块界面。
+
+                        #region//2.1.判断是访客二维码
+                        bool blAccessPermissions = false;//通行权限  false:没有权限  true:合法权限
+                        if (dtOpenDoor.Rows[0]["AId"].ToString().Trim() == "0")//全部区域
+                        {
+                            blAccessPermissions = true;
+                        }
+                        else
+                        {
+                            for (int k = 0; k < DoorTable.Rows.Count; k++)
+                            {
+                                if (DoorTable.Rows[k]["ADId"].ToString().Trim() == dtOpenDoor.Rows[0]["AId"].ToString().Trim() && DoorTable.Rows[k]["MSNo"].ToString().Trim() == strMName)
                                 {
-                                    card = "0";
+                                    blAccessPermissions = true;
+                                    break;
                                 }
-                                voice = dtOpenDoor.Rows[0]["VName"].ToString().Trim() + "出门";  // "测试语音";
-                                name = dtOpenDoor.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
-                                note = "出门";// "进门出门"; 
-                                etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
-                                ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
-                                iLeaveCount++;
-                      
+                            }
+                        }
+                        if (blAccessPermissions == true)
+                        {
+                            //可能存在多条卡号是一样的且开门权限都是合法但进出次数不一样的情况。所以访客软件里保存来访记录前得根据卡号更改发卡表里这些合法记录为非法卡。
+                            //MessageBox.Show(dtOpenDoor.Rows.Count.ToString ());
+                            strFKId = dtOpenDoor.Rows[0]["Id"].ToString().Trim();
+                            if (Event.Reader == 0)//进门
+                            {
+                                strReadHeadNote = "进门";
+                                #region//进门
+                                int iEnterCount = 0;
+                                try
+                                {
+                                    iEnterCount = Convert.ToInt32(dtOpenDoor.Rows[0]["EnterCount"].ToString().Trim());
+                                }
+                                catch
+                                {
+                                    iEnterCount = 0;
+                                }
+                                if (iEnterCount < Convert.ToInt32(LoginFrm.strAllowedEnterCount.ToString()))
+                                {
+                                    Ack = true;
+                                    OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
+                                    relay = Event.Reader;
+                                    time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
+                                    card = strCardNoTemp;// "23456"; 
+                                    if (card == "")
+                                    {
+                                        card = "0";
+                                    }
+                                    voice = dtOpenDoor.Rows[0]["VName"].ToString().Trim() + "进门";  // "测试语音";
+                                    name = dtOpenDoor.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
+                                    note = "进门";// "进门出门"; 
+                                    etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
+                                    ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+                                    iEnterCount++;
+
+
+                                    //记录最后一次入闸时间,进入次数加1
+
+                                    strSQL_OpenDoor = "update " + strT_VisitorAccessInf + " set EnterDoorDT='" + System.DateTime.Now.ToString() + "' ,EnterCount='" + iEnterCount.ToString() + "'  ";
+                                    strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
+                                    strSQL_OpenDoor += strLoginFrmSelectFlag;
+                                    SQLHelper.ExecuteSql(strSQL_OpenDoor);
+
+
+                                    strRecordType = "1";//进出记录
+                                    dGORecord_Count++;
+                                    SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
+                                    setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "Visitor_Card");
+                                }
+                                else
+                                {
+                                    dSpecialRecord_Count++;
+                                    SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
+                                    setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "0");
+                                }
+                                #endregion
+                            }
+                            else if (Event.Reader == 1)//出门
+                            {
+                                strReadHeadNote = "出门";
+                                #region
+                                int iLeaveCount = 0;
+                                try
+                                {
+                                    iLeaveCount = Convert.ToInt32(dtOpenDoor.Rows[0]["LeaveCount"].ToString().Trim());
+                                }
+                                catch
+                                {
+                                    iLeaveCount = 0;
+                                }
+                                if (iLeaveCount < Convert.ToInt32(LoginFrm.strAllowedLeaveCount.ToString()))
+                                {
+                                    #region
+                                    Ack = true;
+                                    OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
+                                    relay = Event.Reader;
+                                    time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
+                                    card = strCardNoTemp;// "23456"; 
+                                    if (card == "")
+                                    {
+                                        card = "0";
+                                    }
+                                    voice = dtOpenDoor.Rows[0]["VName"].ToString().Trim() + "出门";  // "测试语音";
+                                    name = dtOpenDoor.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
+                                    note = "出门";// "进门出门"; 
+                                    etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
+                                    ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+                                    iLeaveCount++;
+
                                     string strSQL_Temp = "";
                                     if (iLeaveCount >= Convert.ToInt32(LoginFrm.strAllowedLeaveCount.ToString()))
                                     {
@@ -2474,8 +2637,85 @@ namespace XXY_VisitorMJAsst
                                         strSQL_Temp += strLoginFrmSelectFlag;
                                         SQLHelper.ExecuteSql(strSQL_Temp);
                                     }
-                            
 
+
+
+                                    strRecordType = "1";//进出记录
+                                    dGORecord_Count++;
+                                    SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
+                                    setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "Visitor_Card");
+                                    #endregion
+                                }
+                                else
+                                {
+                                    dSpecialRecord_Count++;
+                                    SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
+                                    setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "0");
+                                }
+                                #endregion
+                            }
+                        }
+                        else
+                        {
+                            dSpecialRecord_Count++;
+                            SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
+                            setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "0");
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        DataTable dt_ConTem = new DataTable();
+                        string strSQL_ConTem = "select  Id , VNo  ,VIdNo,VActualNo ,VName ,VNameMCode ,VSex,VNation ,VBirthdate ,VIdType  ,VIdNo ,VPermanentAddress ,VVisitReason,";
+                        strSQL_ConTem += " VCarryGoods ,VUnitName  ,VUnitNameMCode ,VCarNo  ,VPhone ,VVisitPCount ,VSumVisitCount ,RDID  ,RDDetailName  ,RDOPhone,RDEPhone,";
+                        strSQL_ConTem += "RPNo ,RPActualNo ,RPName  ,RPMCode ,RPSex ,RPNation ,RPMPhone ,RPRoomNo ,RPDuties ,RegDT ,RegDNo ,RegDDetailName ,RegOperatorNo ,RegOperatorActualNo ,RegOperatorName,";
+                        strSQL_ConTem += "  VCardNo ,VCardStatus ,VCardIssuer  ,VRemarks ,VCardCNo ,VCardCActualNo ,VCardCName ,VCardValidDT ,RSecondWay ,DigitalSignature ,LeaderName ,LeaderIdType ,LeaderIdNo,";
+                        strSQL_ConTem += "  VPolice ,VValidStartToEnd ,Flag,VCardStartValidDT,VCardEndValidDT ,AId,VPlace,DataSource ,BatchImport ,UpLoadToMachine ,LeaveNormal ,VCardSerialNo ,EnterCount ,LeaveCount ,VIdWLNo,";
+                        strSQL_ConTem += "  VIdWLNoToDec,BarCodeNo ,ApiType ,ApiName,VisitorType,RPRoomNo from XXCLOUD.dbo.T_LongTemCardInf where (VCardNo ='" + strCardNoTemp + "'  ) and VCardStatus ='" + "0" + "' ";//Id ,VCardNo,EnterCount,LeaveCount,DigitalSignature 
+                        strSQL_ConTem += " and VCardStartValidDT <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                        strSQL_ConTem += " and VCardEndValidDT >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                        strSQL_ConTem += strLoginFrmSelectFlag;
+                        strSQL_ConTem += " order by Id desc";
+                        dt_ConTem = SQLHelper.DTQuery(strSQL_ConTem);
+
+                        //可能存在多条卡号是一样的且开门权限都是合法但进出次数不一样的情况。所以访客软件里保存来访记录前得根据卡号更改发卡表里这些合法记录为非法卡。
+                        if (dt_ConTem.Rows.Count > 0)//前台普通登记
+                        {
+                            #region//2.访客临时卡
+                            strFloor = dt_ConTem.Rows[0]["RPRoomNo"].ToString().Trim();
+                            strSName = dt_ConTem.Rows[0]["VName"].ToString().Trim();
+                            strSNo = dt_ConTem.Rows[0]["VNo"].ToString().Trim();
+                            strSActualNo = dt_ConTem.Rows[0]["VActualNo"].ToString().Trim();
+                            strSDDetailName = dt_ConTem.Rows[0]["VUnitName"].ToString().Trim();
+                            strApiTypeName = dt_ConTem.Rows[0]["ApiName"].ToString().Trim();
+                            strVisitorType = dt_ConTem.Rows[0]["VisitorType"].ToString().Trim();
+                            strSIdNo = dt_ConTem.Rows[0]["VIdNo"].ToString().Trim();
+                            strSSex = dt_ConTem.Rows[0]["VSex"].ToString().Trim();
+
+                            if (Event.Reader == 0)//进门
+                            {
+                                strReadHeadNote = "进门";
+                                #region//进门
+                                Ack = true;
+                                OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
+                                relay = Event.Reader;
+                                time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
+                                card = strCardNoTemp;// "23456"; 
+                                if (card == "")
+                                {
+                                    card = "0";
+                                }
+                                voice = dt_ConTem.Rows[0]["VName"].ToString().Trim() + "进门";  // "测试语音";
+                                name = dt_ConTem.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
+                                note = "进门";// "进门出门"; 
+                                etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
+                                ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+
+                                //记录最后一次入闸时间
+                                strSQL_OpenDoor = "update " + strT_VisitorAccessInf + " set EnterDoorDT='" + System.DateTime.Now.ToString() + "',EnterCount='" + "0" + "'  ";
+                                strSQL_OpenDoor += " where DigitalSignature ='" + dt_ConTem.Rows[0]["DigitalSignature"].ToString().Trim() + "'";
+                                strSQL_OpenDoor += strLoginFrmSelectFlag;
+                                SQLHelper.ExecuteSql(strSQL_OpenDoor);
 
                                 strRecordType = "1";//进出记录
                                 dGORecord_Count++;
@@ -2483,180 +2723,185 @@ namespace XXY_VisitorMJAsst
                                 setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "Visitor_Card");
                                 #endregion
                             }
-                            else
+                            else if (Event.Reader == 1)//出门
                             {
-                                dSpecialRecord_Count++;
-                                SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
-                                setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "0");
-                            }
-                            #endregion
-                        }
-                    }
-                    else
-                    {
-                        dSpecialRecord_Count++;
-                        SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
-                        setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "0");
-                    }
-                    #endregion
-                }
-                else
-                {
-                    DataTable dt_ConTem = new DataTable();
-                    string strSQL_ConTem = "select  Id ,VNo  ,VActualNo ,VName ,VNameMCode ,VSex,VNation ,VBirthdate ,VIdType  ,VIdNo ,VPermanentAddress ,VVisitReason,";
-                    strSQL_ConTem += " VCarryGoods ,VUnitName  ,VUnitNameMCode ,VCarNo  ,VPhone ,VVisitPCount ,VSumVisitCount ,RDID  ,RDDetailName  ,RDOPhone,RDEPhone,";
-                    strSQL_ConTem += "RPNo ,RPActualNo ,RPName  ,RPMCode ,RPSex ,RPNation ,RPMPhone ,RPRoomNo ,RPDuties ,RegDT ,RegDNo ,RegDDetailName ,RegOperatorNo ,RegOperatorActualNo ,RegOperatorName,";
-                    strSQL_ConTem += "  VCardNo ,VCardStatus ,VCardIssuer  ,VRemarks ,VCardCNo ,VCardCActualNo ,VCardCName ,VCardValidDT ,RSecondWay ,DigitalSignature ,LeaderName ,LeaderIdType ,LeaderIdNo,";
-                    strSQL_ConTem += "  VPolice ,VValidStartToEnd ,Flag,VCardStartValidDT,VCardEndValidDT ,AId,VPlace,DataSource ,BatchImport ,UpLoadToMachine ,LeaveNormal ,VCardSerialNo ,EnterCount ,LeaveCount ,VIdWLNo,";
-                    strSQL_ConTem += "  VIdWLNoToDec,BarCodeNo ,ApiType ,ApiName,VisitorType,RPRoomNo from XXCLOUD.dbo.T_LongTemCardInf where (VCardNo ='" + strCardNoTemp + "'  ) and VCardStatus ='" + "0" + "' ";//Id ,VCardNo,EnterCount,LeaveCount,DigitalSignature 
-                    strSQL_ConTem += " and VCardStartValidDT <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                    strSQL_ConTem += " and VCardEndValidDT >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                    strSQL_ConTem += strLoginFrmSelectFlag;
-                    strSQL_ConTem += " order by Id desc";
-                    dt_ConTem = SQLHelper.DTQuery(strSQL_ConTem);
-
-                    //可能存在多条卡号是一样的且开门权限都是合法但进出次数不一样的情况。所以访客软件里保存来访记录前得根据卡号更改发卡表里这些合法记录为非法卡。
-                    if (dt_ConTem.Rows.Count > 0)//前台普通登记
-                    {
-                        #region//2.访客临时卡
-                        strFloor = dt_ConTem.Rows[0]["RPRoomNo"].ToString().Trim();
-                        strSName = dt_ConTem.Rows[0]["VName"].ToString().Trim();
-                        strSNo = dt_ConTem.Rows[0]["VNo"].ToString().Trim();
-                        strSActualNo = dt_ConTem.Rows[0]["VActualNo"].ToString().Trim();
-                        strSDDetailName = dt_ConTem.Rows[0]["VUnitName"].ToString().Trim();
-                        strApiTypeName = dt_ConTem.Rows[0]["ApiName"].ToString().Trim();
-                        strVisitorType = dt_ConTem.Rows[0]["VisitorType"].ToString().Trim();
-                        if (Event.Reader == 0)//进门
-                        {
-                            strReadHeadNote = "进门";
-                            #region//进门
-                            Ack = true;
-                            OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
-                            relay = Event.Reader;
-                            time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
-                            card = strCardNoTemp;// "23456"; 
-                            if (card == "")
-                            {
-                                card = "0";
-                            }
-                            voice = dt_ConTem.Rows[0]["VName"].ToString().Trim() + "进门";  // "测试语音";
-                            name = dt_ConTem.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
-                            note = "进门";// "进门出门"; 
-                            etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
-                            ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
-
-                            //记录最后一次入闸时间
-                            strSQL_OpenDoor = "update " + strT_VisitorAccessInf + " set EnterDoorDT='" + System.DateTime.Now.ToString() + "',EnterCount='" + "0" + "'  ";
-                            strSQL_OpenDoor += " where DigitalSignature ='" + dt_ConTem.Rows[0]["DigitalSignature"].ToString().Trim() + "'";
-                            strSQL_OpenDoor += strLoginFrmSelectFlag;
-                            SQLHelper.ExecuteSql(strSQL_OpenDoor);
-
-                            strRecordType = "1";//进出记录
-                            dGORecord_Count++;
-                            SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
-                            setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "Visitor_Card");
-                            #endregion
-                        }
-                        else if (Event.Reader == 1)//出门
-                        {
-                            strReadHeadNote = "出门";
-                            #region
-                            Ack = true;
-                            OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
-                            relay = Event.Reader;
-                            time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
-                            card = strCardNoTemp;// "23456"; 
-                            if (card == "")
-                            {
-                                card = "0";
-                            }
-                            voice = dt_ConTem.Rows[0]["VName"].ToString().Trim() + "进门";  // "测试语音";
-                            name = dt_ConTem.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
-                            note = "进门";// "进门出门"; 
-                            etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
-                            ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
-
-
-
-                            //记录最后一次出闸时间
-                            strSQL_OpenDoor = "update " + strT_VisitorAccessInf + " set LeaveDoorDT='" + System.DateTime.Now.ToString() + "', LeaveCount='" + "0" + "' ";
-                            strSQL_OpenDoor += " where DigitalSignature ='" + dt_ConTem.Rows[0]["DigitalSignature"].ToString().Trim() + "'";
-                            strSQL_OpenDoor += strLoginFrmSelectFlag;
-                            SQLHelper.ExecuteSql(strSQL_OpenDoor);
-
-                            strRecordType = "1";//进出记录
-                            dGORecord_Count++;
-                            SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
-                            setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "Visitor_Card");
-
-                            #endregion
-
-                        }
-                        #endregion
-                    }
-                    else
-                    {
-                        #region//3.VIP卡
-                        if (LoginFrm.strAllowedVIPOpenDoorDelay == "1")//允许开启VIP卡功能
-                        {
-                            strSQL_OpenDoor = "select top 1 Id ,SName,SCardNo,EnterCount,LeaveCount,AId ,SNo,SActualNo,SDDetailName  from XXCLOUD.dbo.T_VIPCardStaffInf where SCardNo ='" + strCardNoTemp + "'  ";//and MJEnabled ='" + "1" + "' ";
-                            strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                            strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                            strSQL_OpenDoor += strLoginFrmSelectFlag;
-                            strSQL_OpenDoor += " order by Id desc";
-                            dtOpenDoor = SQLHelper.DTQuery(strSQL_OpenDoor);
-                            if (dtOpenDoor.Rows.Count > 0)
-                            {
-                                strSName = dtOpenDoor.Rows[0]["SName"].ToString().Trim();
-                                strSNo = dtOpenDoor.Rows[0]["SNo"].ToString().Trim();
-                                strSActualNo = dtOpenDoor.Rows[0]["SActualNo"].ToString().Trim();
-                                strSDDetailName = dtOpenDoor.Rows[0]["SDDetailName"].ToString().Trim();
-                                strApiTypeName = "";
-                                strVisitorType = "贵宾卡";
-                                #region//一、VIP卡开门
-                                bool blAccessPermissions = false;//1.判断是否具有通行权限  false:没有权限  true:合法权限
-                                if (dtOpenDoor.Rows[0]["AId"].ToString().Trim() == "0" || dtOpenDoor.Rows[0]["AId"].ToString().Trim() == null)//全部区域
+                                strReadHeadNote = "出门";
+                                #region
+                                Ack = true;
+                                OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
+                                relay = Event.Reader;
+                                time = Convert.ToUInt16(LoginFrm.strAllowedOpenDoorDelaySecond);
+                                card = strCardNoTemp;// "23456"; 
+                                if (card == "")
                                 {
-                                    blAccessPermissions = true;
+                                    card = "0";
                                 }
-                                else
+                                voice = dt_ConTem.Rows[0]["VName"].ToString().Trim() + "进门";  // "测试语音";
+                                name = dt_ConTem.Rows[0]["VName"].ToString().Trim(); // "姓名"; 
+                                note = "进门";// "进门出门"; 
+                                etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";           
+                                ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+
+
+
+                                //记录最后一次出闸时间
+                                strSQL_OpenDoor = "update " + strT_VisitorAccessInf + " set LeaveDoorDT='" + System.DateTime.Now.ToString() + "', LeaveCount='" + "0" + "' ";
+                                strSQL_OpenDoor += " where DigitalSignature ='" + dt_ConTem.Rows[0]["DigitalSignature"].ToString().Trim() + "'";
+                                strSQL_OpenDoor += strLoginFrmSelectFlag;
+                                SQLHelper.ExecuteSql(strSQL_OpenDoor);
+
+                                strRecordType = "1";//进出记录
+                                dGORecord_Count++;
+                                SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
+                                setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp.ToString(), strDTNow, Event.EventType.ToString(), "Visitor_Card");
+
+                                #endregion
+
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            #region//3.VIP卡
+                            if (LoginFrm.strAllowedVIPOpenDoorDelay == "1")//允许开启VIP卡功能
+                            {
+                                strSQL_OpenDoor = "select top 1 Id ,SName,SSex,SIdNo,SCardNo,EnterCount,LeaveCount,AId ,SNo,SActualNo,SDDetailName  from XXCLOUD.dbo.T_VIPCardStaffInf where SCardNo ='" + strCardNoTemp + "'  ";//and MJEnabled ='" + "1" + "' ";
+                                strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                                strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                                strSQL_OpenDoor += strLoginFrmSelectFlag;
+                                strSQL_OpenDoor += " order by Id desc";
+                                dtOpenDoor = SQLHelper.DTQuery(strSQL_OpenDoor);
+                                if (dtOpenDoor.Rows.Count > 0)
                                 {
-                                    for (int k = 0; k < DoorTable.Rows.Count; k++)
+                                    strSName = dtOpenDoor.Rows[0]["SName"].ToString().Trim();
+                                    strSNo = dtOpenDoor.Rows[0]["SNo"].ToString().Trim();
+                                    strSActualNo = dtOpenDoor.Rows[0]["SActualNo"].ToString().Trim();
+                                    strSDDetailName = dtOpenDoor.Rows[0]["SDDetailName"].ToString().Trim();
+                                    strSIdNo = dt_ConTem.Rows[0]["SIdNo"].ToString().Trim();
+                                    strSSex = dt_ConTem.Rows[0]["SSex"].ToString().Trim();
+
+                                    strApiTypeName = "";
+                                    strVisitorType = "贵宾卡";
+                                    #region//一、VIP卡开门
+                                    bool blAccessPermissions = false;//1.判断是否具有通行权限  false:没有权限  true:合法权限
+                                    if (dtOpenDoor.Rows[0]["AId"].ToString().Trim() == "0" || dtOpenDoor.Rows[0]["AId"].ToString().Trim() == null)//全部区域
                                     {
-                                        if (DoorTable.Rows[k]["ADId"].ToString().Trim() == dtOpenDoor.Rows[0]["AId"].ToString().Trim() && DoorTable.Rows[k]["MSNo"].ToString().Trim() == Event.ID.ToString())
-                                        {
-                                            blAccessPermissions = true;
-                                            break;
-                                        }
+                                        blAccessPermissions = true;
                                     }
-                                }
-                                //2.如果具有通行权限，则判断哪个控制器的进出
-                                if (blAccessPermissions == true)
-                                {
-                                    //可能存在多条卡号是一样的且开门权限都是合法但进出次数不一样的情况。所以访客软件里保存来访记录前得根据卡号更改发卡表里这些合法记录为非法卡。
-
-
-                                    strFKId = dtOpenDoor.Rows[0]["Id"].ToString().Trim();
-                                    if (dt_VIPCard.Rows.Count > 0)
+                                    else
                                     {
-                                        int k = 0;
-                                        bool blExist = false;
-                                        for (; k < dt_VIPCard.Rows.Count; k++)
+                                        for (int k = 0; k < DoorTable.Rows.Count; k++)
                                         {
-                                            if (dt_VIPCard.Rows[k]["MSNO"].ToString().Trim() == Event.SerialNo)
+                                            if (DoorTable.Rows[k]["ADId"].ToString().Trim() == dtOpenDoor.Rows[0]["AId"].ToString().Trim() && DoorTable.Rows[k]["MSNo"].ToString().Trim() == Event.ID.ToString())
                                             {
-                                                blExist = true;
+                                                blAccessPermissions = true;
                                                 break;
                                             }
                                         }
-                                        if (blExist == true)
+                                    }
+                                    //2.如果具有通行权限，则判断哪个控制器的进出
+                                    if (blAccessPermissions == true)
+                                    {
+                                        //可能存在多条卡号是一样的且开门权限都是合法但进出次数不一样的情况。所以访客软件里保存来访记录前得根据卡号更改发卡表里这些合法记录为非法卡。
+
+
+                                        strFKId = dtOpenDoor.Rows[0]["Id"].ToString().Trim();
+                                        if (dt_VIPCard.Rows.Count > 0)
                                         {
-                                            if (dt_VIPCard.Rows[k]["Flag"].ToString().Trim() == "0")
+                                            int k = 0;
+                                            bool blExist = false;
+                                            for (; k < dt_VIPCard.Rows.Count; k++)
                                             {
-                                                dt_VIPCard.Rows[k]["Direction"] = "进门";
-                                                dt_VIPCard.Rows[k]["Flag"] = "1";
-                                                dt_VIPCard.AcceptChanges();
+                                                if (dt_VIPCard.Rows[k]["MSNO"].ToString().Trim() == Event.SerialNo)
+                                                {
+                                                    blExist = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (blExist == true)
+                                            {
+                                                if (dt_VIPCard.Rows[k]["Flag"].ToString().Trim() == "0")
+                                                {
+                                                    dt_VIPCard.Rows[k]["Direction"] = "进门";
+                                                    dt_VIPCard.Rows[k]["Flag"] = "1";
+                                                    dt_VIPCard.AcceptChanges();
+                                                    #region//此门禁控制器没开启VIP卡功能，则马上开启。如果已开启，则不执行以下这段代码
+                                                    Ack = true;
+                                                    OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
+                                                    relay = Event.Reader;
+                                                    time = Convert.ToUInt16(LoginFrm.strAllowedVIPOpenDoorDelaySecond);
+                                                    card = strCardNoTemp;// "23456"; 
+                                                    if (card == "")
+                                                    {
+                                                        card = "0";
+                                                    }
+                                                    voice = dtOpenDoor.Rows[0]["SName"].ToString().Trim() + "出门";  // "测试语音";
+                                                    name = dtOpenDoor.Rows[0]["SName"].ToString().Trim(); // "姓名"; 
+                                                    note = "开启VIP卡功能";// "进门出门"; 
+                                                    etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";   
+
+
+
+                                                    ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+                                                    if (!accessMan.OpenToEvent(Event.SerialNo, time))//同时开启2个门
+                                                    {
+                                                        //MessageBox.Show("设备连接异常，无法远程开门!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                                        //return;
+                                                    }
+
+
+                                                    //记录最后一次入闸时间,进入次数加1
+
+                                                    strSQL_OpenDoor = "update XXCLOUD.dbo.T_VIPCardStaffInf  set EnterDoorDT='" + System.DateTime.Now.ToString() + "'  ";
+                                                    strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
+                                                    strSQL_OpenDoor += strLoginFrmSelectFlag;
+                                                    SQLHelper.ExecuteSql(strSQL_OpenDoor);
+
+                                                    strRecordType = "1";//进出记录
+                                                    dGORecord_Count++;
+                                                    SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
+                                                    setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, System.DateTime.Now.ToString(), Event.EventType.ToString(), "VIPCardOpen");
+                                                    #endregion
+                                                }
+                                                else if (dt_VIPCard.Rows[k]["Flag"].ToString().Trim() == "1")
+                                                {
+                                                    #region
+                                                    dt_VIPCard.Rows[k]["Direction"] = "";
+                                                    dt_VIPCard.Rows[k]["Flag"] = "0";
+                                                    dt_VIPCard.AcceptChanges();
+
+
+                                                    if (!accessMan.CloseDoor(Event.SerialNo, byte.Parse("100")))//同时关闭两个门
+                                                    {
+                                                        //MessageBox.Show("设备连接异常，无法远程关门!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                                        //return;
+                                                    }
+
+
+
+
+                                                    strSQL_OpenDoor = "update XXCLOUD.dbo.T_VIPCardStaffInf  set EnterDoorDT='" + System.DateTime.Now.ToString() + "'  ";
+                                                    strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
+                                                    strSQL_OpenDoor += strLoginFrmSelectFlag;
+                                                    SQLHelper.ExecuteSql(strSQL_OpenDoor);
+
+                                                    strRecordType = "1";//进出记录
+                                                    dGORecord_Count++;
+                                                    SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
+                                                    setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, System.DateTime.Now.ToString(), Event.EventType.ToString(), "VIPCardClose");
+                                                    #endregion
+                                                }
+                                            }
+                                            else
+                                            {
+                                                #region//当前VIP卡表中不存在，则新增
+                                                DataRow dr = dt_VIPCard.NewRow();
+                                                dr["MSNO"] = Event.SerialNo;
+                                                dr["Flag"] = "1";
+                                                dt_VIPCard.Rows.Add(dr);
                                                 #region//此门禁控制器没开启VIP卡功能，则马上开启。如果已开启，则不执行以下这段代码
+
+
                                                 Ack = true;
                                                 OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
                                                 relay = Event.Reader;
@@ -2669,11 +2914,12 @@ namespace XXY_VisitorMJAsst
                                                 voice = dtOpenDoor.Rows[0]["SName"].ToString().Trim() + "出门";  // "测试语音";
                                                 name = dtOpenDoor.Rows[0]["SName"].ToString().Trim(); // "姓名"; 
                                                 note = "开启VIP卡功能";// "进门出门"; 
-                                                etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";   
-
+                                                etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";       
 
 
                                                 ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
+
+
                                                 if (!accessMan.OpenToEvent(Event.SerialNo, time))//同时开启2个门
                                                 {
                                                     //MessageBox.Show("设备连接异常，无法远程开门!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -2693,33 +2939,6 @@ namespace XXY_VisitorMJAsst
                                                 SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
                                                 setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, System.DateTime.Now.ToString(), Event.EventType.ToString(), "VIPCardOpen");
                                                 #endregion
-                                            }
-                                            else if (dt_VIPCard.Rows[k]["Flag"].ToString().Trim() == "1")
-                                            {
-                                                #region
-                                                dt_VIPCard.Rows[k]["Direction"] = "";
-                                                dt_VIPCard.Rows[k]["Flag"] = "0";
-                                                dt_VIPCard.AcceptChanges();
-
-
-                                                if (!accessMan.CloseDoor(Event.SerialNo, byte.Parse("100")))//同时关闭两个门
-                                                {
-                                                    //MessageBox.Show("设备连接异常，无法远程关门!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                                                    //return;
-                                                }
-
-
-
-
-                                                strSQL_OpenDoor = "update XXCLOUD.dbo.T_VIPCardStaffInf  set EnterDoorDT='" + System.DateTime.Now.ToString() + "'  ";
-                                                strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
-                                                strSQL_OpenDoor += strLoginFrmSelectFlag;
-                                                SQLHelper.ExecuteSql(strSQL_OpenDoor);
-
-                                                strRecordType = "1";//进出记录
-                                                dGORecord_Count++;
-                                                SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
-                                                setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, System.DateTime.Now.ToString(), Event.EventType.ToString(), "VIPCardClose");
                                                 #endregion
                                             }
                                         }
@@ -2750,13 +2969,11 @@ namespace XXY_VisitorMJAsst
 
                                             ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
 
-
                                             if (!accessMan.OpenToEvent(Event.SerialNo, time))//同时开启2个门
                                             {
                                                 //MessageBox.Show("设备连接异常，无法远程开门!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                                                 //return;
                                             }
-
 
                                             //记录最后一次入闸时间,进入次数加1
 
@@ -2773,77 +2990,30 @@ namespace XXY_VisitorMJAsst
                                             #endregion
                                         }
                                     }
+
+
                                     else
                                     {
-                                        #region//当前VIP卡表中不存在，则新增
-                                        DataRow dr = dt_VIPCard.NewRow();
-                                        dr["MSNO"] = Event.SerialNo;
-                                        dr["Flag"] = "1";
-                                        dt_VIPCard.Rows.Add(dr);
-                                        #region//此门禁控制器没开启VIP卡功能，则马上开启。如果已开启，则不执行以下这段代码
-
-
-                                        Ack = true;
-                                        OpenDoor = Convert.ToByte(true);  // 0 不开 1开 2报警
-                                        relay = Event.Reader;
-                                        time = Convert.ToUInt16(LoginFrm.strAllowedVIPOpenDoorDelaySecond);
-                                        card = strCardNoTemp;// "23456"; 
-                                        if (card == "")
-                                        {
-                                            card = "0";
-                                        }
-                                        voice = dtOpenDoor.Rows[0]["SName"].ToString().Trim() + "出门";  // "测试语音";
-                                        name = dtOpenDoor.Rows[0]["SName"].ToString().Trim(); // "姓名"; 
-                                        note = "开启VIP卡功能";// "进门出门"; 
-                                        etime = DateTime.Now.ToLocalTime().ToString(); // "2016-12-26 12:25:34";       
-
-
-                                        ShowEvent(Event.SerialNo, Event.ID, Event.Datetime, Event.Reader, relay, Event.EventType, Event.Alarm, Event.Value);
-
-                                        if (!accessMan.OpenToEvent(Event.SerialNo, time))//同时开启2个门
-                                        {
-                                            //MessageBox.Show("设备连接异常，无法远程开门!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                                            //return;
-                                        }
-
-                                        //记录最后一次入闸时间,进入次数加1
-
-                                        strSQL_OpenDoor = "update XXCLOUD.dbo.T_VIPCardStaffInf  set EnterDoorDT='" + System.DateTime.Now.ToString() + "'  ";
-                                        strSQL_OpenDoor += " where Id ='" + dtOpenDoor.Rows[0]["Id"].ToString().Trim() + "' ";
-                                        strSQL_OpenDoor += strLoginFrmSelectFlag;
-                                        SQLHelper.ExecuteSql(strSQL_OpenDoor);
-
-                                        strRecordType = "1";//进出记录
-                                        dGORecord_Count++;
-                                        SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_GORecord);
-                                        setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, System.DateTime.Now.ToString(), Event.EventType.ToString(), "VIPCardOpen");
-                                        #endregion
-                                        #endregion
+                                        dSpecialRecord_Count++;
+                                        SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
+                                        setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, strDTNow, Event.EventType.ToString(), "0");
                                     }
+                                    #endregion
                                 }
-
-
                                 else
                                 {
                                     dSpecialRecord_Count++;
                                     SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
-                                    setUIControlsValue.Invoke(Event.Reader.ToString(), strCardNoTemp, strDTNow, Event.EventType.ToString(), "0");
+                                    setUIControlsValue.Invoke(Event.Reader.ToString(), Event.Value.ToString(), strDTNow, Event.EventType.ToString(), "0");
                                 }
-                                #endregion
-                            }
-                            else
-                            {
-                                dSpecialRecord_Count++;
-                                SetUIControlsValue setUIControlsValue = new SetUIControlsValue(ALLOCationSetUIControlsValue_SpecialRecord);
-                                setUIControlsValue.Invoke(Event.Reader.ToString(), Event.Value.ToString(), strDTNow, Event.EventType.ToString(), "0");
-                            }
 
+                            }
+                            #endregion
                         }
-                        #endregion
-                    }
 
+                    }
+                    #endregion
                 }
-                #endregion
             }
             //string strSQL_Temp2 = "insert into " + strT_MJRecordAccessInf + "(MSNo,MName,MachineId ,LogIndex,CardNo ,DoorId ,DName ,ReadHeadId ,ReadHeadNote ,RecordDT,RecordDate,";
             //strSQL_Temp2 += " WarnCode,RecordNote ,RecordType ,DownLoadDT ,ONo ,OActualNo ,OName,VPlace,FKId,SNo,SActualNo,SName,SDDetailName,ApiTypeName,VisitorType,SRoomNo)values('" + Event.ID.ToString().Substring(0, 6) + "','" + strMName + "',";//MSNo,MName
@@ -2991,12 +3161,13 @@ namespace XXY_VisitorMJAsst
                 //textBox1.Text = "删除formId成功";
             }
             string strSQL_Temp2 = "insert into "+strT_MJRecordAccessInf+"(MSNo,MName,MachineId ,LogIndex,CardNo ,DoorId ,DName ,ReadHeadId ,ReadHeadNote ,RecordDT,RecordDate,";
-            strSQL_Temp2 += " WarnCode,RecordNote ,RecordType ,DownLoadDT ,ONo ,OActualNo ,OName,VPlace,FKId,SNo,SActualNo,SName,SDDetailName,ApiTypeName,VisitorType,SRoomNo)values('" + Event.ID.ToString().Substring(0, 6) + "','" + strMName + "',";//MSNo,MName
+            strSQL_Temp2 += " WarnCode,RecordNote ,RecordType ,DownLoadDT ,ONo ,OActualNo ,OName,VPlace,FKId,SNo,SActualNo,SName,SDDetailName,ApiTypeName,VisitorType,SRoomNo,SIdNo,GONO,SSex)values('" + Event.ID.ToString().Substring(0, 6) + "','" + strMName + "',";//MSNo,MName
             strSQL_Temp2 += "'" + strMachineId + "','" + "" + "','" + strCardNoTemp + "','" + Event.Door.ToString() + "',";//MachineId ,LogIndex,CardNo,DoorId 
             strSQL_Temp2 += "'" + strDName + "','" + Event.Reader.ToString() + "','" + strReadHeadNote + "','" + strDTNow.ToString() + "','" + System.DateTime.Now.ToString("yyyy-MM-dd") + "','" + Event.EventType.ToString() + "',";
             strSQL_Temp2 += "'" + strNote + "','" + strRecordType + "','" + System.DateTime.Now.ToString() + "',";
             strSQL_Temp2 += "'" + LoginFrm.strOperatorNo + "','" + LoginFrm.strOperatorActualNo + "','" + LoginFrm.strOperatorName + "','" + strEndUserName + "','" + strFKId + "',";
-            strSQL_Temp2 += "'" + strSNo + "','" + strSActualNo + "','" + strSName + "','" + className + "','" + strApiTypeName + "','" + strVisitorType + "','" + strFloor + "');";
+            strSQL_Temp2 += "'" + strSNo + "','" + strSActualNo + "','" + strSName + "','" + className + "','" + strApiTypeName + "','" + strVisitorType + "','" + strFloor + "',";
+            strSQL_Temp2 += "'" + strSIdNo + "','" + strGONo + "','" + strSSex + "');";
             SQLHelper.ExecuteSql(strSQL_Temp2);
             iCountExecute = 0;
             SBder.Length = 0;
@@ -3113,7 +3284,7 @@ namespace XXY_VisitorMJAsst
             //加载宇泛人脸机数量和奥普控制器数量
             strSQL = "select AItem1 from XXCLOUD.dbo.T_YearInf  where ANo='" + LoginFrm.strCAccout.Substring(1, 4).Trim() + "'";
             myTable = SQLHelper.DTQuery(strSQL);
-            if (myTable.Rows.Count > 0)
+            if (myTable.Rows.Count > 0) 
             {
                 strSQL = myTable.Rows[0]["AItem1"].ToString().Trim();
                 if (strSQL.Trim() != "")
@@ -3128,6 +3299,10 @@ namespace XXY_VisitorMJAsst
             {
                 strYFFaceMachineSum = "1";
                 strAPMJMachineSum = "1";
+            }
+            if (strAPMJMachineSum == "2" && strYFFaceMachineSum == "4")
+            {
+                strAPMJMachineSum = "10";
             }
             //VIP卡
             dt_VIPCard.Columns.Add("MSNO");
