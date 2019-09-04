@@ -2200,8 +2200,8 @@ namespace XXY_VisitorMJAsst
             //strCardNoTemp = "10643";
             //一、内部学生卡开门
             strSQL_OpenDoor = "select top 1 Id ,SName,SCardNo,EnterCount,LeaveCount,AId ,SNo,SActualNo,SDDetailName,SIdNo,SSex    from XXCLOUD.dbo.T_ClassAndStudentInf where SCardNo ='" + strCardNoTemp + "'  ";//and MJEnabled ='" + "1" + "' ";
-            strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-            strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+            //strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+            //strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
             strSQL_OpenDoor += strLoginFrmSelectFlag;
             strSQL_OpenDoor += " order by Id desc";
             dtOpenDoor = SQLHelper.DTQuery(strSQL_OpenDoor);
@@ -3040,7 +3040,8 @@ namespace XXY_VisitorMJAsst
             //        iCountExecute = 0;
             //        SBder.Length = 0;
             //    }
-            //}
+
+            #region 消息推送所有代码
             string appid = "wx31583db6413b8fed";
             string secret = "22e05f670434da88586fef1c7eab275c";
             string className = "";
@@ -3067,27 +3068,98 @@ namespace XXY_VisitorMJAsst
             //MessageBox.Show("strSActualNo:" + strSActualNo);
             DataTable dt = SQLHelper4XXYXT.ExecuteDataTable(sql_getStudentInfo, System.Data.CommandType.Text, pms_getStudentInfo);
             //MessageBox.Show("dt.Rows.Count:" + dt.Rows.Count);
+            
             if (dt.Rows.Count > 0)
             {
-                string phone = dt.Rows[0]["SurrogateMPhone"].ToString();
-                className = dt.Rows[0]["SDDetailName"].ToString();
-
-                //MessageBox.Show("phone:" + phone);
-
-
-                // textBox1.Text = phone;
-                string sql_getOpenId = "select * from XXCLOUD.dbo.T_WXUserInfo where Phone=@Phone";
-                SqlParameter[] pms_getOpenId = new SqlParameter[]{
-                    new SqlParameter("@Phone",SqlDbType.VarChar){Value=phone}
-                };
-                DataTable dt_getOpenId = SQLHelper4XXYXT.ExecuteDataTable(sql_getOpenId, System.Data.CommandType.Text, pms_getOpenId);
-                if (dt_getOpenId.Rows.Count > 0)
+                for (var i = 0; i < dt.Rows.Count; i++)
                 {
-                    openId = dt_getOpenId.Rows[0]["OpenId"].ToString();
-                }
-                else
-                {
-                    MessageBox.Show("not get openId");
+                    string phone = dt.Rows[i]["SurrogateMPhone"].ToString();
+                    className = dt.Rows[i]["SDDetailName"].ToString();
+
+                    string sql_getOpenId = "select * from XXCLOUD.dbo.T_WXUserInfo where Phone=@Phone";
+                    SqlParameter[] pms_getOpenId = new SqlParameter[]{
+                        new SqlParameter("@Phone",SqlDbType.VarChar){Value=phone}
+                    };
+                    DataTable dt_getOpenId = SQLHelper4XXYXT.ExecuteDataTable(sql_getOpenId, System.Data.CommandType.Text, pms_getOpenId);
+                    if (dt_getOpenId.Rows.Count > 0)
+                    {
+                        openId = dt_getOpenId.Rows[0]["OpenId"].ToString();
+
+                        #region 获取form_id
+                        string _form_id = "";
+                        //通过接收消息者的openId获得此人登录小程序后所产生的Form_id
+                        string sql_getForm_id = "select top 1 *  from XXCLOUD.dbo.T_WXFormId where OpenId=@OpenId order by Id";
+                        SqlParameter[] pms_getForm_id = new SqlParameter[]{
+                            new SqlParameter("@OpenId",SqlDbType.VarChar){Value=openId}
+                        };
+                        DataTable dt_Form_id = SQLHelper4XXYXT.ExecuteDataTable(sql_getForm_id, System.Data.CommandType.Text, pms_getForm_id);
+                        if (dt_Form_id.Rows.Count > 0)
+                        {
+                            _form_id = dt_Form_id.Rows[0]["Form_id"].ToString();
+                        }
+                        else
+                        {
+                            MessageBox.Show("not get _form_id");
+                        }
+                        #endregion
+
+                        #region 微信服务消息发送
+                        string touser = openId;//需要从数据库中获取
+                        string template_id = "";
+                        string form_id = _form_id;//需要从数据库中获取
+                        //textBox1.Text = "_form_id:" + form_id;
+                        //string page = "pages/user/index?SActualNo=" + strSActualNo;
+                        string page = "pages/user/index?studentName=" + strSName;
+                        //var data = new TemplateModel("智慧幼儿园", "SName", DateTime.Now.ToString("yyy-MM-dd"));
+
+                        if (strReadHeadNote == "进门")
+                        {
+                            template_id = "wuDEUpW5amir_awDXpCwgj7ZFPjcOPHE8nABc2drJyk";
+                        }
+                        else if (strReadHeadNote == "出门")
+                        {
+                            template_id = "oD7GRQB7Da4gsPLtbjgLM6qWFZbRNm2LghMqRmR2sZs";
+                        }
+
+                        var keyword1 = new
+                        {
+                            value = strSName,
+                            color = "#173177"
+                        };
+                        var keyword2 = new
+                        {
+                            value = DateTime.Now.ToString("yyy-MM-dd hh:mm:ss"),
+                            color = "#173177"
+                        };
+                        var data = new
+                        {
+                            keyword1 = keyword1,
+                            keyword2 = keyword2
+                        };
+                        WeChat wechat = new WeChat();
+                        string result = wechat.SendTemplete(access_token, template_id, touser, form_id, page, data);
+                        //textBox2.Text = result;
+                        // form_id使用后记得删除。有可能发送模板消息后，通过page里面的路径可以打开页面并请求接口，微信小程序的BUG？
+                        string sql_deleteForm_id = "delete from XXCLOUD.dbo.T_WXFormId where Form_id=@Form_id";
+                        SqlParameter[] pms_deleteForm_id = new SqlParameter[]{
+                            new SqlParameter("@Form_id",SqlDbType.VarChar){Value=form_id}
+                        };
+                        object obj_deleteFromId = SQLHelper4XXYXT.ExecuteNonQuery(sql_deleteForm_id, System.Data.CommandType.Text, pms_deleteForm_id);
+                        if (Convert.ToInt32(obj_deleteFromId) == 1)
+                        {
+                            //MessageBox.Show("删除formId成功");
+                            //textBox1.Text = "删除formId成功";
+                        }
+                        else
+                        {
+                            MessageBox.Show("删除formId失败");
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        MessageBox.Show("not get openId");
+                    }
                 }
             }
             else
@@ -3096,77 +3168,15 @@ namespace XXY_VisitorMJAsst
             }
             #endregion
 
-            #region 获取form_id
-            string _form_id = "";
-            //string resultLink = SQLHelper4XXYXT.LinkSqlDatabase();
-            string sql_getForm_id = "select top 1 *  from XXCLOUD.dbo.T_WXFormId where OpenId=@OpenId order by Id";
-            SqlParameter[] pms_getForm_id = new SqlParameter[]{
-                new SqlParameter("@OpenId",SqlDbType.VarChar){Value=openId}
-            };
-            DataTable dt_Form_id = SQLHelper4XXYXT.ExecuteDataTable(sql_getForm_id, System.Data.CommandType.Text, pms_getForm_id);
-            if (dt_Form_id.Rows.Count > 0)
-            {
-                _form_id = dt_Form_id.Rows[0]["Form_id"].ToString();
-            }
-            else
-            {
-                MessageBox.Show("not get _form_id");
-            }
             #endregion
 
-            string touser = openId;//需要从数据库中获取
-            string template_id = "";
-            string form_id = _form_id;//需要从数据库中获取
-            //textBox1.Text = "_form_id:" + form_id;
-            //string page = "pages/user/index?SActualNo=" + strSActualNo;
-            string page = "pages/user/index";
-            //var data = new TemplateModel("智慧幼儿园", "SName", DateTime.Now.ToString("yyy-MM-dd"));
-
-            if (strReadHeadNote == "进门")
-            {
-                template_id = "wuDEUpW5amir_awDXpCwgj7ZFPjcOPHE8nABc2drJyk";
-            }
-            else if (strReadHeadNote == "出门")
-            {
-                template_id = "oD7GRQB7Da4gsPLtbjgLM6qWFZbRNm2LghMqRmR2sZs";
-            }
-
-            var keyword1 = new
-            {
-                value = strSName,
-                color = "#173177"
-            };
-            var keyword2 = new
-            {
-                value = DateTime.Now.ToString("yyy-MM-dd hh:mm:ss"),
-                color = "#173177"
-            };
-            var data = new
-            {
-                keyword1 = keyword1,
-                keyword2 = keyword2
-            };
-            WeChat wechat = new WeChat();
-            string result = wechat.SendTemplete(access_token, template_id, touser, form_id, page, data);
-            //textBox2.Text = result;
-            // form_id使用后记得删除。有可能发送模板消息后，通过page里面的路径可以打开页面并请求接口，微信小程序的BUG？
-            string sql_deleteForm_id = "delete from XXCLOUD.dbo.T_WXFormId where Form_id=@Form_id";
-            SqlParameter[] pms_deleteForm_id = new SqlParameter[]{
-                new SqlParameter("@Form_id",SqlDbType.VarChar){Value=form_id}
-            };
-            object obj_deleteFromId = SQLHelper4XXYXT.ExecuteNonQuery(sql_deleteForm_id, System.Data.CommandType.Text, pms_deleteForm_id);
-            if (Convert.ToInt32(obj_deleteFromId) == 1)
-            {
-                //MessageBox.Show("删除formId成功");
-                //textBox1.Text = "删除formId成功";
-            }
             string strSQL_Temp2 = "insert into "+strT_MJRecordAccessInf+"(MSNo,MName,MachineId ,LogIndex,CardNo ,DoorId ,DName ,ReadHeadId ,ReadHeadNote ,RecordDT,RecordDate,";
             strSQL_Temp2 += " WarnCode,RecordNote ,RecordType ,DownLoadDT ,ONo ,OActualNo ,OName,VPlace,FKId,SNo,SActualNo,SName,SDDetailName,ApiTypeName,VisitorType,SRoomNo,SIdNo,GONO,SSex)values('" + Event.ID.ToString().Substring(0, 6) + "','" + strMName + "',";//MSNo,MName
             strSQL_Temp2 += "'" + strMachineId + "','" + "" + "','" + strCardNoTemp + "','" + Event.Door.ToString() + "',";//MachineId ,LogIndex,CardNo,DoorId 
             strSQL_Temp2 += "'" + strDName + "','" + Event.Reader.ToString() + "','" + strReadHeadNote + "','" + strDTNow.ToString() + "','" + System.DateTime.Now.ToString("yyyy-MM-dd") + "','" + Event.EventType.ToString() + "',";
             strSQL_Temp2 += "'" + strNote + "','" + strRecordType + "','" + System.DateTime.Now.ToString() + "',";
             strSQL_Temp2 += "'" + LoginFrm.strOperatorNo + "','" + LoginFrm.strOperatorActualNo + "','" + LoginFrm.strOperatorName + "','" + strEndUserName + "','" + strFKId + "',";
-            strSQL_Temp2 += "'" + strSNo + "','" + strSActualNo + "','" + strSName + "','" + className + "','" + strApiTypeName + "','" + strVisitorType + "','" + strFloor + "',";
+            strSQL_Temp2 += "'" + strSNo + "','" + strSActualNo + "','" + strSName + "','" + "className" + "','" + strApiTypeName + "','" + strVisitorType + "','" + strFloor + "',";
             strSQL_Temp2 += "'" + strSIdNo + "','" + strGONo + "','" + strSSex + "');";
             SQLHelper.ExecuteSql(strSQL_Temp2);
             iCountExecute = 0;
