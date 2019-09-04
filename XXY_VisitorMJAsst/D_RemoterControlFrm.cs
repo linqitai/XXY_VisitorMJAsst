@@ -3176,7 +3176,7 @@ namespace XXY_VisitorMJAsst
             strSQL_Temp2 += "'" + strDName + "','" + Event.Reader.ToString() + "','" + strReadHeadNote + "','" + strDTNow.ToString() + "','" + System.DateTime.Now.ToString("yyyy-MM-dd") + "','" + Event.EventType.ToString() + "',";
             strSQL_Temp2 += "'" + strNote + "','" + strRecordType + "','" + System.DateTime.Now.ToString() + "',";
             strSQL_Temp2 += "'" + LoginFrm.strOperatorNo + "','" + LoginFrm.strOperatorActualNo + "','" + LoginFrm.strOperatorName + "','" + strEndUserName + "','" + strFKId + "',";
-            strSQL_Temp2 += "'" + strSNo + "','" + strSActualNo + "','" + strSName + "','" + "className" + "','" + strApiTypeName + "','" + strVisitorType + "','" + strFloor + "',";
+            strSQL_Temp2 += "'" + strSNo + "','" + strSActualNo + "','" + strSName + "','" + className + "','" + strApiTypeName + "','" + strVisitorType + "','" + strFloor + "',";
             strSQL_Temp2 += "'" + strSIdNo + "','" + strGONo + "','" + strSSex + "');";
             SQLHelper.ExecuteSql(strSQL_Temp2);
             iCountExecute = 0;
