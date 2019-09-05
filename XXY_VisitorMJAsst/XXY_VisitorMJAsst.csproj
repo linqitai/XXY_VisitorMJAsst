@@ -133,6 +133,7 @@
       <DependentUpon>D_OperatorLogFrm_LogSearch.cs</DependentUpon>
     </Compile>
     <Compile Include="AccessMan.cs" />
+    <Compile Include="AppConfig.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClsIme.cs" />
     <Compile Include="D_RemoterControlFrm.cs">

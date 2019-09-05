@@ -11,7 +11,8 @@ namespace XXY_VisitorMJAsst
     public static class SQLHelper4XXYXT
     {
         //定义一个链接字符串
-        private static readonly string conStr = ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString;
+        //private static readonly string conStr = ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString;
+        private static readonly string conStr = AppConfig.GetValue("AppConfig.txt");
         #region 链接数据库
         public static string LinkSqlDatabase()
         {

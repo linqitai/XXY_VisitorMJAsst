@@ -91,7 +91,9 @@ namespace XXY_VisitorMJAsst
                 strConn = "Persist Security Info=False;User ID= " + para_strDLoginName + " ;";
                 strConn += "Password=" + para_strDLoginPwd + ";database=" + para_strDatabaseName + ";server=" + para_strServerName + ";Connect Timeout=5";
             }
-
+            //FileStream fileStream = new FileStream(strConn, FileMode.Append);
+            //StreamWriter writer = new StreamWriter(fileStream);
+            AppConfig.SetValue("AppConfig.txt", strConn);
             try
             {
                 connectionString = strConn;
