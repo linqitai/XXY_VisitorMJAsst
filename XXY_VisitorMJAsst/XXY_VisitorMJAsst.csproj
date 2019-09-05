@@ -102,6 +102,7 @@
       <HintPath>bin\x86\Release\NoxPlus.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceProcess" />

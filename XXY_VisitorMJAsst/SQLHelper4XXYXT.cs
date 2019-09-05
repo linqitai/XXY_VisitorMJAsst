@@ -11,7 +11,7 @@ namespace XXY_VisitorMJAsst
     public static class SQLHelper4XXYXT
     {
         //定义一个链接字符串
-        private static readonly string conStr = "data source=192.168.1.100;initial catalog=XXCLOUD;persist security info=True;user id=sa;password=123456;multipleactiveresultsets=True;";
+        private static readonly string conStr = ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString;
         #region 链接数据库
         public static string LinkSqlDatabase()
         {

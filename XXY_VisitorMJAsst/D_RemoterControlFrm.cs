@@ -2345,8 +2345,8 @@ namespace XXY_VisitorMJAsst
             {
                 //一、内部员工卡开门
                 strSQL_OpenDoor = "select top 1 Id ,SName,SCardNo,EnterCount,LeaveCount,AId ,SNo,SActualNo,SDDetailName,SIdNo,SSex  from XXCLOUD.dbo.T_StaffInf where SCardNo ='" + strCardNoTemp + "'  ";//and MJEnabled ='" + "1" + "' ";
-                strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                //strSQL_OpenDoor += " and MJCardValidStart <= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                //strSQL_OpenDoor += " and MJCardValidEnd >= '" + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
                 strSQL_OpenDoor += strLoginFrmSelectFlag;
                 strSQL_OpenDoor += " order by Id desc";
                 dtOpenDoor = SQLHelper.DTQuery(strSQL_OpenDoor);
